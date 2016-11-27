@@ -1,0 +1,6 @@
+<h3>{{entry.title}}</h3>
+<a href="{{entry.url}}" target="_blank">More info at Anime1.com</a>
+<div class="collection with-header">
+    <div class="collection-header"><h4>Episodes</h4></div>
+    <a ng-repeat="s in subentries | filter : search" href="{{s.url}}" target="_blank" class="collection-item">Episode {{s.episode_num}}: {{s.title}}</a>
+</div>

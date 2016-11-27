@@ -1,0 +1,27 @@
+<h2>New Entry</h2>
+<div class="row">
+    <form novalidate class="col s12" ng-submit="save()">
+        <div class="row">
+            <div class="input-field col s12">
+                <i class="material-icons prefix">label</i>
+                <input ng-model="entry.title" id="title" type="text" class="validate">
+                <label for="title">Title</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+                <i class="material-icons prefix">http</i>
+                <input ng-model="entry.page_url" id="page_url" type="text" class="validate">
+                <label for="title">Url</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="btn red waves-effect waves-light" type="submit" name="save">Add entry
+                <i class="material-icons right">send</i>
+            </button>
+            <a href="#/" class="btn-flat waves-effect waves-red">Cancel</a>
+        </div>
+    </form>
+</div>
