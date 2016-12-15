@@ -24,6 +24,7 @@ from webanimeupdater.workers.base_worker import BaseWorker
 class SearchEpisodesWorker(BaseWorker):
     def __init__(self):
         self.amActive = False
+        self.anime_manager = AnimeManager()
 
     def run(self, force=False):
         if self.amActive:
@@ -31,7 +32,7 @@ class SearchEpisodesWorker(BaseWorker):
 
         self.amActive = True
 
-        AnimeManager().search_episodes()
+        self.anime_manager.search_episodes()
 
         # Worker ended
         self.amActive = False
