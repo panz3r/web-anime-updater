@@ -1,8 +1,7 @@
-
 import sqlite3 as sqlite
 
-from commons import logger as log
-from configs import DATABASE_PATH
+from webanimeupdater.commons import logger as log
+
 
 class SQLiteDb:
 
@@ -13,7 +12,7 @@ class SQLiteDb:
         with sqlite.connect(self.DB_NAME) as con:
             cur = con.cursor()
             cur.execute("CREATE TABLE IF NOT EXISTS Users(id INTEGER PRIMARY KEY, username TEXT, password TEXT)")
-            cur.execute("CREATE TABLE IF NOT EXISTS Anime(id INTEGER PRIMARY KEY, title TEXT, url TEXT)")
+            cur.execute("CREATE TABLE IF NOT EXISTS Anime(id INTEGER PRIMARY KEY, title TEXT, url TEXT, UNIQUE(url))")
             cur.execute("CREATE TABLE IF NOT EXISTS Episode(id INTEGER PRIMARY KEY, series_id INTEGER, episode_num INTEGER, title TEXT, provider TEXT, url TEXT, UNIQUE(series_id, episode_num))")
 
     def find_user(self, username):
@@ -66,7 +65,7 @@ class SQLiteDb:
         log.debug('Data to insert: ' + str(data))
         with sqlite.connect(self.DB_NAME) as con:
             c = con.cursor()
-            c.execute("INSERT INTO Anime(title, url) VALUES('%(title)s', '%(page_url)s')" % data)
+            c.execute("INSERT INTO Anime(title, url) VALUES(?, ?)", (data['title'], data['page_url']))
             lid = c.lastrowid
             log.debug("The last Id of the inserted row is %s" % lid)
         return lid
@@ -94,5 +93,3 @@ class SQLiteDb:
 
         log.info("Episode isn't new. Skipping add")
         return False
-
-db = SQLiteDb(DATABASE_PATH)

@@ -19,11 +19,12 @@
 # along with SickRage. If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
-import time
 import threading
+import time
 import traceback
 
-from commons import logger, ex
+from webanimeupdater.commons import logger
+from webanimeupdater.commons.utils import ex
 
 
 class Scheduler(threading.Thread):
@@ -37,7 +38,8 @@ class Scheduler(threading.Thread):
         else:
             # Set last run to the last full hour
             temp_now = datetime.datetime.now()
-            self.lastRun = datetime.datetime(temp_now.year, temp_now.month, temp_now.day, temp_now.hour, 0, 0, 0) + self.run_delay - cycle_time
+            self.lastRun = datetime.datetime(temp_now.year, temp_now.month, temp_now.day, temp_now.hour, 0, 0,
+                                             0) + self.run_delay - cycle_time
         self.action = action
         self.cycleTime = cycle_time
         self.start_time = start_time

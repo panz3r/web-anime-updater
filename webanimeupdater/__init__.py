@@ -18,18 +18,12 @@
 # along with WebAnimeUpdater. If not, see <http://www.gnu.org/licenses/>.
 #
 
-from webanimeupdater.commons import logger as log
-from webanimeupdater.tornadoApp import TornadoApp
-from webanimeupdater.workers import EPISODE_SEARCH_SCHEDULER
+DEBUG = True
 
-if __name__ == "__main__":
-    log.info("Starting episodeSearchScheduler...")
-    # start the daily search scheduler
-    EPISODE_SEARCH_SCHEDULER.enable = True
-    EPISODE_SEARCH_SCHEDULER.start()
-    log.info("Started episodeSearchScheduler.")
+DATABASE_PATH = 'wau.db'
 
-    log.info("Starting TornadoApp...")
-    # start tornado WebApp
-    webapp = TornadoApp()
-    webapp.start()
+EPISODE_SEARCH_FREQUENCY = 15
+
+TELEGRAM_API_KEY = '178553759:AAHr9uLW7lOUHlsuWgjXt-lXIeHQkpSDjdI'
+TELEGRAM_CHAT_ID = 10661288
+

@@ -16,20 +16,21 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with WebAnimeUpdater. If not, see <http://www.gnu.org/licenses/>.
-#
 
-from webanimeupdater.commons import logger as log
-from webanimeupdater.tornadoApp import TornadoApp
-from webanimeupdater.workers import EPISODE_SEARCH_SCHEDULER
+from webanimeupdater import DEBUG
+from webanimeupdater.commons.utils import logger_setup
 
-if __name__ == "__main__":
-    log.info("Starting episodeSearchScheduler...")
-    # start the daily search scheduler
-    EPISODE_SEARCH_SCHEDULER.enable = True
-    EPISODE_SEARCH_SCHEDULER.start()
-    log.info("Started episodeSearchScheduler.")
+logger = logger_setup(DEBUG)
 
-    log.info("Starting TornadoApp...")
-    # start tornado WebApp
-    webapp = TornadoApp()
-    webapp.start()
+
+class Episode:
+    series = None
+    title = None
+    provider = None
+    link = None
+
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return "{series: %s, title: %s, provider: %s, link: %s}" % (self.series, self.title, self.provider, self.link)

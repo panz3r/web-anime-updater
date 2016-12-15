@@ -16,20 +16,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with WebAnimeUpdater. If not, see <http://www.gnu.org/licenses/>.
-#
 
-from webanimeupdater.commons import logger as log
-from webanimeupdater.tornadoApp import TornadoApp
-from webanimeupdater.workers import EPISODE_SEARCH_SCHEDULER
+from telegram import Bot
 
-if __name__ == "__main__":
-    log.info("Starting episodeSearchScheduler...")
-    # start the daily search scheduler
-    EPISODE_SEARCH_SCHEDULER.enable = True
-    EPISODE_SEARCH_SCHEDULER.start()
-    log.info("Started episodeSearchScheduler.")
+from webanimeupdater import TELEGRAM_API_KEY, TELEGRAM_CHAT_ID
+from webanimeupdater.notifiers.base_notifier import BaseNotifier
 
-    log.info("Starting TornadoApp...")
-    # start tornado WebApp
-    webapp = TornadoApp()
-    webapp.start()
+
+class Telegram(BaseNotifier):
+    def __init__(self):
+        self.bot = Bot(token=TELEGRAM_API_KEY)
+
+    def send_message(self, message):
+        self.bot.sendMessage(chat_id=TELEGRAM_CHAT_ID, text=message)
