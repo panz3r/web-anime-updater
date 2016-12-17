@@ -26,6 +26,7 @@ from tornado import web, ioloop, gen
 from tornado.escape import json_encode, utf8
 from tornado.web import authenticated
 
+import webanimeupdater
 from webanimeupdater.commons import logger as log
 from webanimeupdater.managers import anime_manager, user_manager
 
@@ -41,7 +42,7 @@ class TornadoApp:
         "static_path": os.path.join(WWW_PATH, "static"),
         "login_url": "/login",
         "cookie_secret": "wkhatanLb]5j4fqVAfuzdk%4npviSdmuGrd",
-        "debug": True
+        "debug": webanimeupdater.DEBUG
     }
 
     class IndexHandler(web.RequestHandler):
@@ -165,7 +166,7 @@ class TornadoApp:
         def private_get(self):
             log.debug('Get User called: %s' % self.current_user)
             self.set_header("Content-Type", "application/json")
-            self.write(json_encode({'username': self.current_user}))
+            self.write(json_encode(USER_MANAGER.get_user_settings(self.current_user)))
 
         def private_post(self):
             pass
@@ -173,8 +174,7 @@ class TornadoApp:
     def __init__(self):
         self.application = web.Application([
             (r"/", web.RedirectHandler, {"url": "/app/"}),
-            (r"/app/", self.IndexHandler),
-            (r"/app/index.html", self.IndexHandler),
+            (r"/app/.*", self.IndexHandler),
             (r"/login", self.LoginHandler),
             (r"/logout", self.LogoutHandler),
             (r"/api/v1/login", self.LoginAPIHandler),
@@ -182,6 +182,7 @@ class TornadoApp:
             (r"/api/v1/entries", self.EntriesAPIHandler),
             (r"/api/v1/entries/(.*)", self.EntryAPIHandler),
             (r"/api/v1/subentries/(.*)", self.SubEntriesAPIHandler),
+            (r".*", web.RedirectHandler, {"url": "/app/"}),
         ], **self.settings)
 
     def start(self):

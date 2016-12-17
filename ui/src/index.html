@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html ng-app="getanime">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>WebAnimeUpdater</title>
 
-    <!--Import Google Icon Font-->
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Compiled and minified materialize.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
-
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <link rel="stylesheet" href="/static/css/toastr.min.css"/>
+    <!--Import Google Icon Font-->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Compiled and minified materialize.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+
+    <!-- inject:css -->
+    <!-- endinject -->
 
     <base href="/app/">
 </head>
@@ -20,8 +21,6 @@
 <div class="navbar-fixed">
     <!-- Dropdown Structure -->
     <ul id="profile" class="dropdown-content">
-        <li><a href="#">Account</a></li>
-        <li class="divider"></li>
         <li><a href="/app/settings">Settings</a></li>
         <li class="divider"></li>
         <li><a href="/logout">Logout</a></li>
@@ -36,7 +35,7 @@
             <a href="/app/" class="brand-logo center">WebAnimeUpdater</a>
             <ul class="right">
                 <li>
-                    <form>
+                    <form class="hide-on-med-and-down">
                         <div class="input-field">
                             <input id="search" type="search" ng-model="search" required>
                             <label for="search"><i class="material-icons">search</i></label>
@@ -45,8 +44,8 @@
                     </form>
                 </li>
                 <li>
-                    <a class="dropdown-button" href="#!" data-activates="profile">Account
-                        <i class="material-icons right">arrow_drop_down</i>
+                    <a class="dropdown-button" href="#!" data-activates="profile">
+                        <img id="user-gravatar" class="circle" gravatar-src-once="user.username" gravatar-size="50"/>
                     </a>
                 </li>
             </ul>
@@ -56,16 +55,11 @@
 
 <div class="container" ng-view></div>
 
-<script src="/static/js/jquery.min.js"></script>
+<!-- inject:js -->
+<!-- endinject -->
 
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
-
-<script src="/static/js/angular.min.js"></script>
-<script src="/static/js/angular-resource.min.js"></script>
-<script src="/static/js/angular-route.min.js"></script>
-<script src="/static/js/sizzle.min.js"></script>
-<script src="/static/js/toastr.min.js"></script>
 
 <!-- Main App JS -->
 <script src="/static/js/app.js"></script>

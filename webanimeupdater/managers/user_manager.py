@@ -51,3 +51,8 @@ class UserManager:
             notify_login(username, False, "User not found")
 
             return False
+
+    def get_user_settings(self, username):
+        user_settings = {'username': username}
+
+        return user_settings

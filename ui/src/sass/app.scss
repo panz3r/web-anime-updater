@@ -1,0 +1,9 @@
+#user-gravatar {
+    margin-top: 6px;
+}
+
+@media only screen and (max-width: 600px) {
+  #user-gravatar {
+    margin-top: 3px;
+  }
+}

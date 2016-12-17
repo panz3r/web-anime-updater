@@ -8,6 +8,8 @@ var gulp = require("gulp"),//http://gulpjs.com/
     clean = require('gulp-clean'),
     log = util.log,
     chalk = require('chalk'),
+    angularFilesort = require('gulp-angular-filesort'),
+    inject = require('gulp-inject'),
     minifyHtml = require('gulp-htmlmin'),
     uglifyJs = require('gulp-uglify'),
     minifyCss = require('gulp-clean-css'),
@@ -38,7 +40,7 @@ var gulp = require("gulp"),//http://gulpjs.com/
 
     // list of style files for scss processing
     themeFiles = [
-        'src/scss/*.scss',
+        'src/sass/*.scss',
     ],
 
     cssFiles = [
@@ -127,7 +129,9 @@ gulp.task('assets', function() {
 gulp.task('sass', function(){
     // log('Generate CSS files ' + (new Date()).toString());
     gulp.src(themeFiles)
-        .pipe(sass({ style: 'expanded' }))
+        .pipe(sass({
+            style: 'expanded'
+        }))
         .pipe(autoprefixer("last 3 version","safari 5", "ie 8", "ie 9"))
         .pipe(gulp.dest(project.tmp + 'style/compiled'))
         .pipe(concat("main.css"))
@@ -139,7 +143,9 @@ gulp.task('sass', function(){
 gulp.task('css', function() {
     return gulp
             .src(cssFiles)
-            .pipe(minifyCss({ processImport: true }))
+            .pipe(minifyCss({
+                processImport: true
+            }))
             .pipe(flatten())
             .pipe(gulp.dest(project.dist_static + 'css'));
 });
@@ -165,8 +171,15 @@ gulp.task('jsMap', function() {
 gulp.task('html', function() {
     return gulp
         .src(htmlFiles)
+        .pipe(inject(gulp.src(project.dist_static + 'css/*.css', {read:false}), {
+            ignorePath: '/../webanimeupdater/ui'
+        }))
+        .pipe(inject(gulp.src(project.dist_static + 'js/*.min.js').pipe(angularFilesort()), {
+            ignorePath: '/../webanimeupdater/ui'
+        }))
         .pipe(minifyHtml({
-            collapseWhitespace: true
+            collapseWhitespace: true,
+            removeComments: true
         }))
         .pipe(gulp.dest(project.dist_template));
 });

@@ -1,4 +1,4 @@
-angular.module("webanimeupdater.services", ['ngResource', 'ngRoute']).
+angular.module("webanimeupdater.services", ['ngResource', 'ngRoute', 'ui.gravatar']).
     factory('Entry', function ($resource) {
         var Entry = $resource('/api/v1/entries/:entryId', {entryId: '@id'});
         Entry.prototype.isNew = function(){
@@ -21,20 +21,25 @@ angular.module("webanimeupdater.services", ['ngResource', 'ngRoute']).
         return User;
     });
 
-angular.module("getanime", ["webanimeupdater.services"]).
-    config(function ($routeProvider, $locationProvider) {
+angular.module("getanime", ["webanimeupdater.services"])
+    .config(function ($routeProvider, $locationProvider) {
         $routeProvider
             .when('/', {templateUrl: '/static/views/entries/list.html', controller: EntryListController})
             .when('/anime/new', {templateUrl: '/static/views/entries/create.html', controller: EntryCreateController})
             .when('/anime/:entryId', {templateUrl: '/static/views/entries/detail.html', controller: EntryDetailController})
-            .when('/settings', {templateUrl: '/static/views/entries/settings.html', controller: AccountSettingsController});
+            .when('/settings', {templateUrl: '/static/views/entries/settings.html', controller: AccountSettingsController})
+            .otherwise({redirectTo: '/'});
 
         // use the HTML5 History API
         $locationProvider.html5Mode(true);
+    })
+    .run(function($rootScope, User) {
+        $rootScope.user = new User.get();
     });
 
-function EntryListController($scope, $rootScope, Entry) {
+function EntryListController($scope, $rootScope, User, Entry) {
     $rootScope.goBack = false;
+
     $scope.entries = Entry.query();
 }
 
@@ -61,6 +66,4 @@ function EntryDetailController($scope, $rootScope, $routeParams, $location, Entr
 
 function AccountSettingsController($scope, $rootScope, $location, User) {
     $rootScope.goBack = true;
-
-    $scope.user = User.get();
 }
