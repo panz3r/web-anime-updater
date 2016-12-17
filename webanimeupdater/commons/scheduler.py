@@ -46,7 +46,7 @@ class Scheduler(threading.Thread):
 
         self.name = thread_name
         self.silent = silent
-        self.stop = threading.Event()
+        self.should_stop = False
         self.force = False
         self.enable = False
 
@@ -79,7 +79,7 @@ class Scheduler(threading.Thread):
         """
         Runs the thread
         """
-        while not self.stop.is_set():
+        while not self.should_stop:
             if self.enable:
                 try:
                     current_time = datetime.datetime.now()
@@ -116,4 +116,7 @@ class Scheduler(threading.Thread):
             time.sleep(1)
 
         # exiting thread
-        self.stop.clear()
+        self.should_stop = True
+
+    def stop(self):
+        self.should_stop = True

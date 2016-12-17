@@ -34,7 +34,7 @@ USER_MANAGER = user_manager.UserManager()
 
 
 class TornadoApp:
-    WWW_PATH = os.path.join(os.path.dirname(__file__), "ui", "dist")
+    WWW_PATH = os.path.join(os.path.dirname(__file__), "ui")
 
     settings = {
         "template_path": os.path.join(WWW_PATH, "templates"),
@@ -132,8 +132,8 @@ class TornadoApp:
             entry_data = json.loads(self.request.body)
             log.debug('Entry data: ' + str(entry_data))
             if not entry_data['page_url'] is None:
-                entry_id = ANIME_MANAGER.add_anime_from_url(entry_data['page_url'])
-                log.info('Entry created with id: %s' % str(entry_id))
+                entry_id = ANIME_MANAGER.add_anime_from_url(entry_data['page_url'], self.current_user)
+                log.info('Entry created: %s' % str(entry_id))
                 self.set_header("Content-Type", "application/json")
                 self.set_status(201)
             self.set_status(200)
@@ -160,6 +160,16 @@ class TornadoApp:
         def private_post(self):
             pass
 
+    class UserAPIHandler(PrivateAPIHandler):
+
+        def private_get(self):
+            log.debug('Get User called: %s' % self.current_user)
+            self.set_header("Content-Type", "application/json")
+            self.write(json_encode({'username': self.current_user}))
+
+        def private_post(self):
+            pass
+
     def __init__(self):
         self.application = web.Application([
             (r"/", self.IndexHandler),
@@ -167,6 +177,7 @@ class TornadoApp:
             (r"/login", self.LoginHandler),
             (r"/logout", self.LogoutHandler),
             (r"/api/v1/login", self.LoginAPIHandler),
+            (r"/api/v1/user", self.UserAPIHandler),
             (r"/api/v1/entries", self.EntriesAPIHandler),
             (r"/api/v1/entries/(.*)", self.EntryAPIHandler),
             (r"/api/v1/subentries/(.*)", self.SubEntriesAPIHandler),

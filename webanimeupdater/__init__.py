@@ -18,12 +18,12 @@
 # along with WebAnimeUpdater. If not, see <http://www.gnu.org/licenses/>.
 #
 
-DEBUG = True
+DEBUG = False
 
 DATABASE_PATH = 'wau.db'
 
 EPISODE_SEARCH_FREQUENCY = 15
 
-TELEGRAM_API_KEY = '178553759:AAHr9uLW7lOUHlsuWgjXt-lXIeHQkpSDjdI'
+TELEGRAM_API_KEY = '310398421:AAEPV1dL2ATvMFKslfqpPHRBdh90PsHOz24'
 TELEGRAM_CHAT_ID = 10661288
 

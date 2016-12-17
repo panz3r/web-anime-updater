@@ -39,11 +39,11 @@ class AnimeManager:
     def get_anime_episodes_by_id(self, anime_id):
         return self.db.find_subentries(anime_id)
 
-    def add_anime_from_url(self, url):
+    def add_anime_from_url(self, url, username):
         log.debug("add_anime_from_url(url:%s) called...", url)
         anime_details = self.scraper.search_anime(url)
         log.debug("anime_details found: %s", anime_details)
-        return self.db.insert(anime_details) > 0
+        return self.db.insert_anime(anime_details, username) > 0
 
     def search_episodes(self):
         series = self.db.find()
