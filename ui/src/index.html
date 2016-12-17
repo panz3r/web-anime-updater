@@ -12,12 +12,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <!--link rel="stylesheet" href="/static/css/bootstrap.css"/-->
-    <link rel="stylesheet" href="/static/css/toastr.css"/>
+    <link rel="stylesheet" href="/static/css/toastr.min.css"/>
 
     <title>WebAnimeUpdater</title>
 </head>
 <body>
 <div class="navbar-fixed">
+    <!-- Dropdown Structure -->
+    <ul id="profile" class="dropdown-content">
+        <li><a href="#!">Account</a></li>
+        <li class="divider"></li>
+        <li><a href="/#/settings">Settings</a></li>
+        <li class="divider"></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
     <nav>
         <div class="nav-wrapper blue">
             <ul class="left">
@@ -37,7 +45,9 @@
                     </form>
                 </li>
                 <li>
-                    <a href="/logout"><i class="material-icons left">lock_open</i></a>
+                    <a class="dropdown-button" href="#!" data-activates="profile">Account
+                        <i class="material-icons right">arrow_drop_down</i>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -46,13 +56,23 @@
 
 <div class="container" ng-view></div>
 
-<script src="/static/js/jquery-1.9.1.js"></script>
+<script src="/static/js/jquery.min.js"></script>
+
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
-<!--script src="/static/js/bootstrap.js"></script-->
-<script src="/static/js/angular.js"></script>
-<script src="/static/js/angular-resource.js"></script>
-<script src="/static/js/toastr.js"></script>
+
+<script src="/static/js/angular.min.js"></script>
+<script src="/static/js/angular-resource.min.js"></script>
+<script src="/static/js/angular-route.min.js"></script>
+<script src="/static/js/sizzle.min.js"></script>
+<script src="/static/js/toastr.min.js"></script>
+
+<!-- Main App JS -->
 <script src="/static/js/app.js"></script>
+
+<script>
+    $(document).ready(function(){$(".dropdown-button").dropdown();});
+</script>
+
 </body>
 </html>

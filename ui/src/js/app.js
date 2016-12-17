@@ -1,4 +1,4 @@
-angular.module("webanimeupdater.services", ["ngResource"]).
+angular.module("webanimeupdater.services", ['ngResource', 'ngRoute']).
     factory('Entry', function ($resource) {
         var Entry = $resource('/api/v1/entries/:entryId', {entryId: '@id'});
         Entry.prototype.isNew = function(){
@@ -12,6 +12,13 @@ angular.module("webanimeupdater.services", ["ngResource"]).
             return (typeof(this.id) === 'undefined');
         }
         return SubEntry;
+    })
+    .factory('User', function ($resource) {
+        var User = $resource('/api/v1/user');
+        User.prototype.isNew = function(){
+            return (typeof(this.id) === 'undefined');
+        }
+        return User;
     });
 
 angular.module("getanime", ["webanimeupdater.services"]).
@@ -19,7 +26,8 @@ angular.module("getanime", ["webanimeupdater.services"]).
         $routeProvider
             .when('/', {templateUrl: '/static/views/entries/list.html', controller: EntryListController})
             .when('/anime/new', {templateUrl: '/static/views/entries/create.html', controller: EntryCreateController})
-            .when('/anime/:entryId', {templateUrl: '/static/views/entries/detail.html', controller: EntryDetailController});
+            .when('/anime/:entryId', {templateUrl: '/static/views/entries/detail.html', controller: EntryDetailController})
+            .when('/settings', {templateUrl: '/static/views/entries/settings.html', controller: AccountSettingsController});
     });
 
 function EntryListController($scope, $rootScope, Entry) {
@@ -46,4 +54,10 @@ function EntryDetailController($scope, $rootScope, $routeParams, $location, Entr
     var entryId = $routeParams.entryId;
     $scope.entry = Entry.get({entryId: entryId});
     $scope.subentries = SubEntry.query({entryId: entryId});
+}
+
+function AccountSettingsController($scope, $rootScope, $location, User) {
+    $rootScope.goBack = true;
+
+    $scope.user = User.get();
 }
