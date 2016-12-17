@@ -65,7 +65,7 @@ class TornadoApp:
                 return
             else:
                 self.set_secure_cookie("webanimeupdater_user", str(user_id))
-                self.redirect(self.get_argument("next", "/"))
+                self.redirect(self.get_argument("next", "/app/"))
 
     class LogoutHandler(web.RequestHandler):
         def get(self):
@@ -172,8 +172,9 @@ class TornadoApp:
 
     def __init__(self):
         self.application = web.Application([
-            (r"/", self.IndexHandler),
-            (r"/index.html", self.IndexHandler),
+            (r"/", web.RedirectHandler, {"url": "/app/"}),
+            (r"/app/", self.IndexHandler),
+            (r"/app/index.html", self.IndexHandler),
             (r"/login", self.LoginHandler),
             (r"/logout", self.LogoutHandler),
             (r"/api/v1/login", self.LoginAPIHandler),

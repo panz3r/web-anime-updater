@@ -22,12 +22,15 @@ angular.module("webanimeupdater.services", ['ngResource', 'ngRoute']).
     });
 
 angular.module("getanime", ["webanimeupdater.services"]).
-    config(function ($routeProvider) {
+    config(function ($routeProvider, $locationProvider) {
         $routeProvider
             .when('/', {templateUrl: '/static/views/entries/list.html', controller: EntryListController})
             .when('/anime/new', {templateUrl: '/static/views/entries/create.html', controller: EntryCreateController})
             .when('/anime/:entryId', {templateUrl: '/static/views/entries/detail.html', controller: EntryDetailController})
             .when('/settings', {templateUrl: '/static/views/entries/settings.html', controller: AccountSettingsController});
+
+        // use the HTML5 History API
+        $locationProvider.html5Mode(true);
     });
 
 function EntryListController($scope, $rootScope, Entry) {
