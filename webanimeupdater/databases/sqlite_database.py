@@ -6,6 +6,33 @@ from webanimeupdater.commons import logger as log
 class SQLiteDb:
     DB_NAME = 'test.db'
 
+    @staticmethod
+    def generate_insert_query(table_name, data_dict):
+        q = "INSERT INTO %s(" % (table_name,)
+        v = ") VALUES ("
+        params = ()
+
+        for k in data_dict.keys():
+            q += "%s, " % k
+            v += "?, "
+            params += (data_dict[k],)
+
+        return q[:-2] + v[:-2] + ")", params
+
+    @staticmethod
+    def generate_update_query(table_name, key_name, key_value, data_dict):
+        q = "UPDATE %s SET " % table_name
+        w = " WHERE %s=?" % key_name
+        params_tuple = ()
+
+        for k in data_dict.keys():
+            q += "%s=?, " % k
+            params_tuple += (data_dict[k],)
+
+        params_tuple += (key_value,)
+
+        return q[:-2] + w, params_tuple
+
     def __init__(self, database_file):
         log.debug("Will use DB at %s" % (database_file,))
         self.DB_NAME = database_file
@@ -83,6 +110,39 @@ class SQLiteDb:
             log.debug("Data: %s" % str(data))
         return data
 
+    def find_series_by_user(self, username):
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute('SELECT a.* '
+                        'FROM Anime a '
+                        'JOIN User_Anime ua ON a.id = ua.series_id '
+                        'JOIN Users u ON u.id = ua.user_id  '
+                        'WHERE u.username = ? GROUP BY a.title', (username, ))
+
+            data = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
+
+            for d in data:
+                cur.execute('SELECT MAX(episode_num) FROM Episode WHERE series_id=?', (d['id'],))
+                d['last_episode'] = cur.fetchone()[0] or 0
+
+            log.debug("Data: %s" % str(data))
+        return data
+        pass
+
+    def find_series_with_subscribers(self):
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("SELECT a.*, GROUP_CONCAT(u.username) subscribers "
+                        "FROM Anime a "
+                        "JOIN User_Anime ua ON a.id = ua.series_id "
+                        "JOIN Users u ON u.id = ua.user_id  "
+                        "GROUP BY title "
+                        "ORDER BY title")
+
+            data = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
+            log.debug("Data: %s" % str(data))
+        return data
+
     def find_by_id(self, entry_id):
         data = None
         with sqlite.connect(self.DB_NAME) as con:
@@ -150,3 +210,102 @@ class SQLiteDb:
 
         log.info("Episode isn't new. Skipping add")
         return False
+
+    def find_user_settings(self, username):
+        settings = {}
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute(
+                'SELECT s.service_name, s.settings_id '
+                'FROM User_Settings s JOIN Users u ON s.user_id = u.id '
+                'WHERE u.username=?',
+                (username,))
+
+            for row in cur.fetchall():
+                #log.debug(row)
+                service, settings_id = row
+                log.debug("Loading settings for service '%s' at id: %s" % (service, settings_id))
+                table_name = "%s_Settings" % (service.capitalize(),)
+
+                c2 = con.cursor()
+                c2.execute('SELECT * FROM ' + table_name + ' WHERE settings_id=?', (settings_id,))
+                service_settings = [dict((c2.description[i][0], value) for i, value in enumerate(row)) for row in
+                                    c2.fetchall()]
+                if len(service_settings) > 0:
+                    log.debug("%s settings: %s" % (service, str(service_settings[0])))
+                    settings[service] = service_settings[0]
+
+        return settings
+
+    def find_user_settings_by_service(self, username, service_name):
+
+        settings = {}
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute(
+                'SELECT s.service_name, s.settings_id '
+                'FROM User_Settings s JOIN Users u ON s.user_id = u.id '
+                'WHERE u.username=? AND s.service_name=?',
+                (username, service_name))
+
+            for row in cur.fetchall():
+                #log.debug(row)
+                service, settings_id = row
+                log.debug("Loading settings for service '%s' at id: %s" % (service, settings_id))
+                table_name = "%s_Settings" % (service.capitalize(),)
+
+                c2 = con.cursor()
+                c2.execute('SELECT * FROM ' + table_name + ' WHERE settings_id=?', (settings_id,))
+                service_settings = [dict((c2.description[i][0], value) for i, value in enumerate(row)) for row in
+                                    c2.fetchall()]
+                if len(service_settings) > 0:
+                    log.debug("%s settings: %s" % (service, str(service_settings[0])))
+                    settings[service] = service_settings[0]
+
+        return settings
+
+    def update_user_settings(self, username, service_name, service_settings):
+        settings_id = 0
+
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute(
+                'SELECT s.settings_id '
+                'FROM User_Settings s JOIN Users u ON s.user_id = u.id '
+                'WHERE u.username=? AND s.service_name=?',
+                (username, service_name))
+            found_settings_id = cur.fetchone()
+
+            table_name = "%s_Settings" % (service_name.capitalize(),)
+
+            if found_settings_id is None:
+                # Insert settings
+                insert_q, insert_p = SQLiteDb.generate_insert_query(table_name, service_settings)
+                log.debug("Insert query is '%s' with params: %s" % (insert_q, str(insert_p)))
+
+                c = con.cursor()
+                c.execute(insert_q, insert_p)
+                settings_id = c.lastrowid
+                log.debug("Settings saved with ID %s" % settings_id)
+            else:
+                settings_id = found_settings_id[0]
+                # Update settings
+                update_q, update_p = SQLiteDb.generate_update_query(table_name, 'settings_id', settings_id,
+                                                                    service_settings)
+                log.debug("Update query is '%s' with params: %s" % (update_q, str(update_p)))
+
+                c = con.cursor()
+                c.execute(update_q, update_p)
+
+        if settings_id > 0:
+            self.link_user_settings(username, service_name, settings_id)
+
+    def link_user_settings(self, username, service_name, settings_id):
+        user = self.find_user(username)
+
+        user_id = user['id']
+
+        with sqlite.connect(self.DB_NAME) as con:
+            cur = con.cursor()
+            cur.execute("INSERT OR IGNORE INTO User_Settings(user_id, service_name, settings_id) VALUES(?, ?, ?)",
+                        (user_id, service_name, settings_id))

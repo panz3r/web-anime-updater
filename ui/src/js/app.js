@@ -1,4 +1,4 @@
-angular.module("webanimeupdater.services", ['ngResource', 'ngRoute', 'ui.gravatar']).
+angular.module("webanimeupdater.services", ['ngResource', 'ngRoute', 'ui.gravatar', 'ui-notification']).
     factory('Entry', function ($resource) {
         var Entry = $resource('/api/v1/entries/:entryId', {entryId: '@id'});
         Entry.prototype.isNew = function(){
@@ -22,7 +22,7 @@ angular.module("webanimeupdater.services", ['ngResource', 'ngRoute', 'ui.gravata
     });
 
 angular.module("getanime", ["webanimeupdater.services"])
-    .config(function ($routeProvider, $locationProvider) {
+    .config(function ($routeProvider, $locationProvider, $qProvider) {
         $routeProvider
             .when('/', {templateUrl: '/static/views/entries/list.html', controller: EntryListController})
             .when('/anime/new', {templateUrl: '/static/views/entries/create.html', controller: EntryCreateController})
@@ -32,6 +32,9 @@ angular.module("getanime", ["webanimeupdater.services"])
 
         // use the HTML5 History API
         $locationProvider.html5Mode(true);
+
+        // Try to fix not working notifications
+        $qProvider.errorOnUnhandledRejections(false);
     })
     .run(function($rootScope, User) {
         $rootScope.user = new User.get();
@@ -43,14 +46,14 @@ function EntryListController($scope, $rootScope, User, Entry) {
     $scope.entries = Entry.query();
 }
 
-function EntryCreateController($scope, $rootScope, $routeParams, $location, Entry) {
+function EntryCreateController($scope, $rootScope, $routeParams, $location, Notification, Entry) {
     $rootScope.goBack = true;
 
     $scope.entry = new Entry();
 
     $scope.save = function () {
     	$scope.entry.$save(function (entry, headers) {
-    		toastr.success("New entry added successfully!");
+    		Notification.success("New entry added successfully!");
             $location.path('/');
         });
     };
@@ -64,6 +67,19 @@ function EntryDetailController($scope, $rootScope, $routeParams, $location, Entr
     $scope.subentries = SubEntry.query({entryId: entryId});
 }
 
-function AccountSettingsController($scope, $rootScope, $location, User) {
+function AccountSettingsController($scope, $rootScope, $location, Notification, User) {
     $rootScope.goBack = true;
+
+    $scope.user = angular.copy($rootScope.user);
+
+    $scope.save = function () {
+    	$scope.user.$save(function (user, headers) {
+    		Notification.success("User settings saved successfully!");
+            $location.path('/');
+        });
+    };
+
+    $scope.reset = function () {
+        $scope.user = angular.copy($rootScope.user);
+    };
 }

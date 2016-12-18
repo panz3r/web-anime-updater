@@ -9,27 +9,26 @@
 <div class="card-panel">
     <h4>Telegram</h4>
     <div class="row">
-        <form novalidate class="col s12" ng-submit="save()">
+        <form novalidate class="col s12">
             <div class="row">
                 <div class="input-field col s12">
-                    <i class="material-icons prefix">label</i>
-                    <input ng-model="user.telegram.api_key" id="api_key" type="text" class="validate">
-                    <label for="api_key">Telegram Bot Token</label>
+                    <i class="material-icons prefix">vpn_key</i>
+                    <input ng-model="user.services.telegram.api_key" id="api_key" type="text">
+                    <label ng-class="{active: user.services.telegram.api_key}" for="api_key">Telegram Bot Token</label>
                 </div>
             </div>
 
             <div class="row">
                 <div class="input-field col s12">
-                    <i class="material-icons prefix">http</i>
-                    <input ng-model="user.telegram.chat_id" id="chat_id" type="text" class="validate">
-                    <label for="chat_id">Telegram Chat ID</label>
+                    <i class="material-icons prefix">chat_bubble_outline</i>
+                    <input ng-model="user.services.telegram.chat_id" id="chat_id" type="text">
+                    <label ng-class="{active: user.services.telegram.chat_id}" for="chat_id">Telegram Chat ID</label>
                 </div>
             </div>
 
             <div class="row center-align">
-                <button class="btn red waves-effect waves-light" type="submit" name="save">Save <i
-                        class="material-icons left">done</i></button>
-                <a href="#/" class="btn-flat waves-effect waves-red">Reset</a>
+                <button class="btn red waves-effect waves-light" ng-click="save()">Save <i class="material-icons left">done</i></button>
+                <button class="btn-flat waves-effect waves-red" ng-click="reset()">Reset</button>
             </div>
         </form>
     </div>

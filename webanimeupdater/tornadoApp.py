@@ -33,14 +33,21 @@ from webanimeupdater.managers import anime_manager, user_manager
 ANIME_MANAGER = anime_manager.AnimeManager()
 USER_MANAGER = user_manager.UserManager()
 
+# Main Constants
+WEBAPP_ENDPOINT = r"/wau/"
+LOGIN_ENDPOINT = r"/login"
+LOGOUT_ENDPOINT = r"/logout"
+API_ENDPOINT = r"/api/v1/"
+
 
 class TornadoApp:
+
     WWW_PATH = os.path.join(os.path.dirname(__file__), "ui")
 
     settings = {
         "template_path": os.path.join(WWW_PATH, "templates"),
         "static_path": os.path.join(WWW_PATH, "static"),
-        "login_url": "/login",
+        "login_url": LOGIN_ENDPOINT,
         "cookie_secret": "wkhatanLb]5j4fqVAfuzdk%4npviSdmuGrd",
         "debug": webanimeupdater.DEBUG
     }
@@ -66,12 +73,12 @@ class TornadoApp:
                 return
             else:
                 self.set_secure_cookie("webanimeupdater_user", str(user_id))
-                self.redirect(self.get_argument("next", "/app/"))
+                self.redirect(self.get_argument("next", WEBAPP_ENDPOINT))
 
     class LogoutHandler(web.RequestHandler):
         def get(self):
             self.clear_cookie("webanimeupdater_user")
-            self.redirect("/")
+            self.redirect(LOGIN_ENDPOINT)
 
     class LoginAPIHandler(web.RequestHandler):
 
@@ -124,7 +131,7 @@ class TornadoApp:
 
         def private_get(self):
             log.debug('EntriesAPIHandler.get() called...')
-            entries = ANIME_MANAGER.get_anime_series()
+            entries = ANIME_MANAGER.get_anime_series_by_user(self.current_user)
             self.set_header("Content-Type", "application/json")
             self.write(json_encode(entries))
 
@@ -169,20 +176,24 @@ class TornadoApp:
             self.write(json_encode(USER_MANAGER.get_user_settings(self.current_user)))
 
         def private_post(self):
-            pass
+            log.debug('Posted data: ' + str(self.request.body))
+            entry_data = json.loads(self.request.body)
+            log.debug('Entry data: ' + str(entry_data))
+            USER_MANAGER.set_user_settings(self.current_user, entry_data)
+            self.set_status(201)
 
     def __init__(self):
         self.application = web.Application([
-            (r"/", web.RedirectHandler, {"url": "/app/"}),
-            (r"/app/.*", self.IndexHandler),
-            (r"/login", self.LoginHandler),
-            (r"/logout", self.LogoutHandler),
-            (r"/api/v1/login", self.LoginAPIHandler),
-            (r"/api/v1/user", self.UserAPIHandler),
-            (r"/api/v1/entries", self.EntriesAPIHandler),
-            (r"/api/v1/entries/(.*)", self.EntryAPIHandler),
-            (r"/api/v1/subentries/(.*)", self.SubEntriesAPIHandler),
-            (r".*", web.RedirectHandler, {"url": "/app/"}),
+            (r"/", web.RedirectHandler, {"url": WEBAPP_ENDPOINT}),
+            (WEBAPP_ENDPOINT + ".*", self.IndexHandler),
+            (LOGIN_ENDPOINT, self.LoginHandler),
+            (LOGOUT_ENDPOINT, self.LogoutHandler),
+            (API_ENDPOINT + "login", self.LoginAPIHandler),
+            (API_ENDPOINT + "user", self.UserAPIHandler),
+            (API_ENDPOINT + "entries", self.EntriesAPIHandler),
+            (API_ENDPOINT + r"entries/(.*)", self.EntryAPIHandler),
+            (API_ENDPOINT + r"subentries/(.*)", self.SubEntriesAPIHandler),
+            (r".*", web.RedirectHandler, {"url": WEBAPP_ENDPOINT}),
         ], **self.settings)
 
     def start(self):

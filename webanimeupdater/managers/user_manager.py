@@ -55,4 +55,20 @@ class UserManager:
     def get_user_settings(self, username):
         user_settings = {'username': username}
 
+        external_settings = self.db.find_user_settings(username)
+        user_settings['services'] = external_settings
+
         return user_settings
+
+    def set_user_settings(self, username, settings):
+        for service in settings['services']:
+            service_settings = settings['services'][service]
+            log.debug("'%s' service updated settings: %s" % (service, str(service_settings)))
+
+            if 'settings_id' in service_settings.keys():
+                log.debug("Settings should be updated")
+                sid = service_settings.pop('settings_id')
+            else:
+                log.debug("Settings should be inserted")
+
+            self.db.update_user_settings(username, service, service_settings)

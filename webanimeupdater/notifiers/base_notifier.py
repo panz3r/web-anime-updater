@@ -24,5 +24,5 @@ class BaseNotifier(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def send_message(self, message):
+    def send_message(self, username, message):
         raise NotImplementedError()

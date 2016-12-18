@@ -26,11 +26,11 @@ __NOTIFIERS = {
 }
 
 
-def send_message(msg):
+def send_message(user, msg):
     for name, notifier in __NOTIFIERS.items():
         try:
-            log.debug('Sending message using %s: %s' % (name, msg))
-            notifier.send_message(msg)
+            log.debug('Sending message to %s using %s: %s' % (user, name, msg))
+            notifier.send_message(user, msg)
         except Exception as e:
             log.warn('Exception while sending notification: %s' % e)
 
@@ -41,9 +41,9 @@ def notify_login(user, successfull, details):
     else:
         msg = "Failed login detected for User '%s': %s" % (user, details)
 
-    send_message(msg)
+    send_message(user, msg)
 
 
-def send_episode_link(episode):
+def send_episode_link(user, episode):
     log.debug('Sending Episode link notification: %s' % (episode,))
-    send_message("Found new episode for %s @ %s. Watch it now! %s" % (episode.series, episode.provider, episode.link))
+    send_message(user, "Found new episode for %s @ %s. Watch it now! %s" % (episode.series, episode.provider, episode.link))

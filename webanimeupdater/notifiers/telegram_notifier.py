@@ -19,13 +19,22 @@
 
 from telegram import Bot
 
-from webanimeupdater import TELEGRAM_API_KEY, TELEGRAM_CHAT_ID
+from webanimeupdater import DATABASE_PATH
+from webanimeupdater.commons import logger as log
+from webanimeupdater.databases.sqlite_database import SQLiteDb
 from webanimeupdater.notifiers.base_notifier import BaseNotifier
 
 
 class Telegram(BaseNotifier):
     def __init__(self):
-        self.bot = Bot(token=TELEGRAM_API_KEY)
+        self.db = SQLiteDb(DATABASE_PATH)
 
-    def send_message(self, message):
-        self.bot.sendMessage(chat_id=TELEGRAM_CHAT_ID, text=message)
+    def send_message(self, username, message):
+        user_settings = self.db.find_user_settings_by_service(username, 'telegram')
+
+        if 'telegram' in user_settings.keys():
+            api_key = user_settings['telegram']['api_key']
+            chat_id = user_settings['telegram']['chat_id']
+            Bot(token=api_key).send_message(chat_id=chat_id, text=message)
+        else:
+            log.debug("Can't notify user %s because no telegram setup was found" % (username,))

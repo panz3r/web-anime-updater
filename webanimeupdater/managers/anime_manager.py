@@ -33,6 +33,9 @@ class AnimeManager:
     def get_anime_series(self):
         return self.db.find()
 
+    def get_anime_series_by_user(self, username):
+        return self.db.find_series_by_user(username)
+
     def get_anime_series_by_id(self, anime_id):
         return self.db.find_by_id(anime_id)
 
@@ -46,7 +49,7 @@ class AnimeManager:
         return self.db.insert_anime(anime_details, username) > 0
 
     def search_episodes(self):
-        series = self.db.find()
+        series = self.db.find_series_with_subscribers()
         for s in series:
             episodes = []
 
@@ -60,7 +63,8 @@ class AnimeManager:
             for episode in episodes:
                 inserted = self.db.insert_episode(episode)
                 if inserted:
-                    try:
-                        send_episode_link(episode)
-                    except Exception as e:
-                        log.warn('Exception while sending Telegram notification: %s' % e)
+                    for user in s['subscribers'].split(','):
+                        try:
+                            send_episode_link(user, episode)
+                        except Exception as e:
+                            log.warn('Exception while sending Telegram notification to %s: %s' % (user, e))
