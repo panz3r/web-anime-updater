@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="getanime">
+<html ng-app="wau">
 <head>
     <title>WebAnimeUpdater</title>
 
@@ -32,7 +32,7 @@
                     <a ng-show="goBack" href="/wau/"><i class="material-icons left">arrow_back</i></a>
                 </li>
             </ul>
-            <a href="/app/" class="brand-logo center">WebAnimeUpdater</a>
+            <a href="/wau/" class="brand-logo center">WebAnimeUpdater</a>
             <ul class="right">
                 <li>
                     <form class="hide-on-med-and-down">
@@ -64,9 +64,22 @@
 
 <!-- Main App JS -->
 <script src="/static/js/app.js"></script>
+<!-- Factories -->
+<script src="/static/js/anime.factory.js"></script>
+<script src="/static/js/user.factory.js"></script>
+<script src="/static/js/episode.factory.js"></script>
+<!-- Controllers -->
+<script src="/static/js/entry-list.controller.js"></script>
+<script src="/static/js/entry-details.controller.js"></script>
+<script src="/static/js/entry-create.controller.js"></script>
+<script src="/static/js/account-settings.controller.js"></script>
+<!-- Route -->
+<script src="/static/js/route-config.js"></script>
 
 <script>
-    $(document).ready(function(){$(".dropdown-button").dropdown();});
+    $(document).ready(function(){
+        $(".dropdown-button").dropdown();
+    });
 </script>
 
 </body>

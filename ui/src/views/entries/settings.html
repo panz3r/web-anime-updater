@@ -13,22 +13,22 @@
             <div class="row">
                 <div class="input-field col s12">
                     <i class="material-icons prefix">vpn_key</i>
-                    <input ng-model="user.services.telegram.api_key" id="api_key" type="text">
-                    <label ng-class="{active: user.services.telegram.api_key}" for="api_key">Telegram Bot Token</label>
+                    <input ng-model="vm.user.services.telegram.api_key" id="api_key" type="text">
+                    <label ng-class="{active: vm.user.services.telegram.api_key}" for="api_key">Telegram Bot Token</label>
                 </div>
             </div>
 
             <div class="row">
                 <div class="input-field col s12">
                     <i class="material-icons prefix">chat_bubble_outline</i>
-                    <input ng-model="user.services.telegram.chat_id" id="chat_id" type="text">
-                    <label ng-class="{active: user.services.telegram.chat_id}" for="chat_id">Telegram Chat ID</label>
+                    <input ng-model="vm.user.services.telegram.chat_id" id="chat_id" type="text">
+                    <label ng-class="{active: vm.user.services.telegram.chat_id}" for="chat_id">Telegram Chat ID</label>
                 </div>
             </div>
 
             <div class="row center-align">
-                <button class="btn red waves-effect waves-light" ng-click="save()">Save <i class="material-icons left">done</i></button>
-                <button class="btn-flat waves-effect waves-red" ng-click="reset()">Reset</button>
+                <button class="btn red waves-effect waves-light" ng-click="vm.save()">Save <i class="material-icons left">done</i></button>
+                <button class="btn-flat waves-effect waves-red" ng-click="vm.reset()">Reset</button>
             </div>
         </form>
     </div>
