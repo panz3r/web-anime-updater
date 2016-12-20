@@ -5,6 +5,8 @@
             .config(config)
             .run(init);
 
+    config.$inject = ['$routeProvider', '$locationProvider', '$qProvider'];
+
     function config($routeProvider, $locationProvider, $qProvider) {
         $routeProvider
             .when('/', {
@@ -35,6 +37,8 @@
         // Try to fix not working notifications
         $qProvider.errorOnUnhandledRejections(false);
     }
+
+    init.$inject = ['$rootScope', 'User'];
 
     function init($rootScope, User) {
         $rootScope.user = new User.get();

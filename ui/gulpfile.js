@@ -27,25 +27,28 @@ var gulp = require("gulp"),//http://gulpjs.com/
         dist_template: '../webanimeupdater/ui/templates/'
     },
 
-    // list of where our js files come from
-    jsFiles = [
-        'src/js/*.js',
-        'bower_components/**/*.min.js'
+    // list of where bower_components files come from
+    bowerFiles = [
+        'bower_components/**/*.min.js',
+        'bower_components/**/*.map'
     ],
 
-    // list of where our js.map files come from
-    jsMapFiles = [
-        'bower_components/**/*.map'
+    bowerStyleFiles = [
+        'bower_components/**/*.min.css'
+    ],
+
+    // list of where our js files come from
+    jsFiles = [
+        'src/js/**/*.js'
     ],
 
     // list of style files for scss processing
     themeFiles = [
-        'src/sass/*.scss',
+        'src/sass/*.scss'
     ],
 
     cssFiles = [
-        'src/css/*.css',
-        'bower_components/**/*.min.css'
+        'src/css/*.css'
     ],
 
     // look for html files
@@ -64,7 +67,7 @@ gulp.task('default', ['build']);
 
 // moves everything to the build folder
 gulp.task('build', function(callback) {
-    runSequence('clean', ['assets', 'sass', 'css', 'fonts', 'js', 'jsMap'], ['html', 'views'], callback);
+    runSequence('clean', ['assets', 'bowerComponents', 'sass', 'css', 'fonts', 'js'], ['html', 'views'], callback);
 });
 
 // run the build task, start up a browser, then
@@ -102,7 +105,7 @@ gulp.task('serve', ['build'], function() {
         });
 });
 
-
+gulp.task('bowerComponents', ['bowerJs', 'bowerStyle']);
 
 /*******************************
  * SUPPORTING TASKS
@@ -126,6 +129,22 @@ gulp.task('assets', function() {
         .pipe(gulp.dest(project.dist_static + 'assets'));
 });
 
+// move Bower files over
+gulp.task('bowerJs', function() {
+    return gulp
+            .src(bowerFiles)
+            .pipe(flatten())
+            .pipe(gulp.dest(project.dist_static + 'js'));
+});
+
+gulp.task('bowerStyle', function() {
+    return gulp
+            .src(bowerStyleFiles)
+            .pipe(flatten())
+            .pipe(gulp.dest(project.dist_static + 'css'));
+});
+
+// Compile SASS
 gulp.task('sass', function(){
     // log('Generate CSS files ' + (new Date()).toString());
     gulp.src(themeFiles)
@@ -154,16 +173,8 @@ gulp.task('css', function() {
 gulp.task('js', function() {
     return gulp
             .src(jsFiles)
-            //.pipe(uglifyJs())
-            .pipe(flatten())
-            .pipe(gulp.dest(project.dist_static + 'js'));
-});
-
-// move jsMap files over
-gulp.task('jsMap', function() {
-    return gulp
-            .src(jsMapFiles)
-            .pipe(flatten())
+            .pipe(concat('wau.js'))
+            .pipe(uglifyJs())
             .pipe(gulp.dest(project.dist_static + 'js'));
 });
 
