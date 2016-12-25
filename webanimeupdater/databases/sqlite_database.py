@@ -99,13 +99,12 @@ class SQLiteDb:
         data = None
         with sqlite.connect(self.DB_NAME) as con:
             cur = con.cursor()
-            cur.execute('SELECT * FROM Anime ORDER BY title')
+            cur.execute('SELECT a.*, MAX(e.episode_num) AS last_episode '
+                        'FROM Anime a '
+                        'LEFT JOIN Episode e ON a.id = e.series_id '
+                        'GROUP BY a.title')
 
             data = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
-
-            for d in data:
-                cur.execute('SELECT MAX(episode_num) FROM Episode WHERE series_id=?', (d['id'],))
-                d['last_episode'] = cur.fetchone()[0] or 0
 
             log.debug("Data: %s" % str(data))
         return data
@@ -113,17 +112,15 @@ class SQLiteDb:
     def find_series_by_user(self, username):
         with sqlite.connect(self.DB_NAME) as con:
             cur = con.cursor()
-            cur.execute('SELECT a.* '
+            cur.execute('SELECT a.*, MAX(e.episode_num) AS last_episode '
                         'FROM Anime a '
+                        'LEFT JOIN Episode e ON a.id = e.series_id '
                         'JOIN User_Anime ua ON a.id = ua.series_id '
                         'JOIN Users u ON u.id = ua.user_id  '
-                        'WHERE u.username = ? GROUP BY a.title', (username, ))
+                        'WHERE u.username = ? '
+                        'GROUP BY a.title', (username, ))
 
             data = [dict((cur.description[i][0], value) for i, value in enumerate(row)) for row in cur.fetchall()]
-
-            for d in data:
-                cur.execute('SELECT MAX(episode_num) FROM Episode WHERE series_id=?', (d['id'],))
-                d['last_episode'] = cur.fetchone()[0] or 0
 
             log.debug("Data: %s" % str(data))
         return data
