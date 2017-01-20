@@ -16,10 +16,10 @@
         ////////////////////////////
 
         function saveAnime() {
-            vm.entry.$save(function (entry, headers) {
+            vm.series.$save(function (entry, headers) {
                 Notification.success("New entry added successfully!");
                 $location.path('/');
             });
-        };
+        }
     }
 }) ();

@@ -10,7 +10,7 @@
         var Entry = $resource('/api/v1/entries/:entryId', {entryId: '@id'});
         Entry.prototype.isNew = function(){
             return (typeof(this.id) === 'undefined');
-        }
+        };
         return Entry;
     }
 }) ();
